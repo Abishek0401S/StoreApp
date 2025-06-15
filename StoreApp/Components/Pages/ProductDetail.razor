@@ -1,0 +1,113 @@
+﻿@page "/productdetail/{id:int}"
+@using StoreApp.Models
+@using StoreApp.Services
+@inject ProductService ProductService
+@inject NavigationManager Navigation
+
+<style>
+    .back-button {
+        margin: 2rem auto 0 auto;
+        display: block;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .back-button:hover {
+        background-color: #0056b3;
+    }
+
+    .product-container {
+        max-width: 800px;
+        margin: 1.5rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .product-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-align: center;
+        color: #333;
+    }
+
+    .product-image {
+        width: 250px;
+        height: 250px;
+        object-fit: contain;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        background-color: #f8f8f8;
+        padding: 1rem;
+    }
+
+    .product-details {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .product-info {
+        font-size: 1.1rem;
+        color: #444;
+    }
+
+    .product-info strong {
+        color: #111;
+    }
+
+    .loading {
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 1.2rem;
+        color: #777;
+    }
+</style>
+
+<button class="back-button" @onclick="NavigateBack">← Back to Products</button>
+
+@if (product == null)
+{
+        <p class="loading">Loading product details...</p>
+}
+else
+{
+        <div class="product-container">
+            <h2 class="product-title">@product.Title</h2>
+            <img src="@product.Image" alt="@product.Title" class="product-image" />
+
+            <div class="product-details">
+                <p class="product-info"><strong>Price:</strong> $@product.Price</p>
+                <p class="product-info"><strong>Category:</strong> @product.Category</p>
+                <p class="product-info">@product.Description</p>
+            </div>
+        </div>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    Product product;
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await ProductService.GetProductByIdAsync(id);
+    }
+
+    void NavigateBack()
+    {
+        Navigation.NavigateTo("/ProductList");
+    }
+}

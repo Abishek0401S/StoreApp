@@ -1,0 +1,101 @@
+﻿@page "/ProductList"
+@using StoreApp.Models
+@using StoreApp.Services
+@inject NavigationManager Navigation
+@inject ProductService ProductService
+
+<style>
+    .title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #333;
+        text-align: center;
+    }
+
+    .loading {
+        font-size: 1.2rem;
+        color: #888;
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+
+    .product-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+        .product-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+    .product-image {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        margin-bottom: 1rem;
+    }
+
+    .product-info h3 {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+        color: #444;
+    }
+
+    .price {
+        font-weight: bold;
+        color: #28a745;
+        font-size: 1rem;
+    }
+
+</style>
+
+<h1 class="title">Products</h1>
+
+@if (products == null)
+{
+    <p class="loading">Loading...</p>
+}
+else
+{
+
+    <div class="product-grid">
+        @foreach (var product in products)
+        {
+            <div class="product-card" @onclick="@(() => NavigateToDetail(product.Id))">
+                <img src="@product.Image" alt="@product.Title" class="product-image" />
+                <div class="product-info">
+                    <h3>@product.Title</h3>
+                    <p class="price">$@product.Price</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    List<Product> products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetProductsAsync();
+    }
+
+    void NavigateToDetail(int id)
+    {
+        Navigation.NavigateTo($"/productdetail/{id}");
+    }
+}
